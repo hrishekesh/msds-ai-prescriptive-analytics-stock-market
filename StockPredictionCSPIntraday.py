@@ -49,7 +49,6 @@ for index in range (0, 60):
     current_min_diff_high = y_pred_low[index][0] - y_pred_open[index][0]
     min_diff_high_dict.update({current_min_diff_high : index+1})
     min_diff_high.append(current_min_diff_high)
-    #min_diff_high.append({y_pred_high[index] - y_pred_close[index] : index+1})
     
 # calculate predicted differences in a day
 
@@ -115,5 +114,5 @@ for call in calls:
         intraday_profit += (start_price - target_price)
     print('{:15s} on day {} at {:.2f} with target {:.2f}'.format(call.get('action'), 
           day, start_price, target_price))
-print('This agent will help you earn a profit of ${:.2f}'.format(intraday_profit))
+print('This agent will help you earn a profit of ${:.2f} per share'.format(intraday_profit))
 print('These results are with the assumption that first action if any is taken at market opening')
