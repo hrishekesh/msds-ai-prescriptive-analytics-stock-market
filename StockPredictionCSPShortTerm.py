@@ -7,8 +7,6 @@ Created on Sat Mar  2 08:16:54 2019
 """
 
 from constraint import *
-import pandas as pd
-import numpy as np
 import pickle
 file_open = open('open_prediction', 'rb')
 y_pred_open = pickle.load(file_open)
@@ -43,10 +41,8 @@ stockPrediction.addVariable('day', available_days)
 stockPrediction.addVariable('action', ['Sell', 'Buy'])
 
 
-
-
-
 def stockPredictionConstraint(action, day):
+    # Buy call in case the share reaches lowest point in a span of 5 days
     if action == 'Buy' and day > 2 and day < 57:
         if y_pred_open[day-1][0] < y_pred_open[day-2][0] and \
         y_pred_open[day-1][0] < y_pred_open[day][0] and \
@@ -55,7 +51,7 @@ def stockPredictionConstraint(action, day):
             return True
         else:
             return False
-        
+    # Sell call in case the share reaches highest point in a span of 5 days    
     if action == 'Sell' and day > 3 and day < 59:
         if y_pred_open[day][0] < y_pred_open[day-1][0] and \
         y_pred_open[day+1][0] < y_pred_open[day-1][0] and \
@@ -64,21 +60,6 @@ def stockPredictionConstraint(action, day):
             return True
         else:
             return False
-        
-last_action = []
-    
-def alternatingConstraint(action, day):
-    last_action.append({'action': action, 'day': day})
-    action_list = sorted(last_action, key = lambda k: k['day'])
-    print('***********')
-    print(action_list)
-    index = 1
-    for action_day_dict in action_list:
-        if index % 2 == 0 and action_day_dict.get('action') == 'Buy':
-            return False
-        index += 1
-    
-    return True
     
 stockPrediction.addConstraint(stockPredictionConstraint, ['action', 'day'])
 
@@ -86,6 +67,7 @@ calls = stockPrediction.getSolutions()
 calls = sorted(calls, key = lambda k: k['day'])
 
 index = 1
+# Ensure that a buy call is followed by a sell call
 for action_day_dict in calls:
     if (index % 2 == 0 and action_day_dict.get('action') == 'Buy') or \
     (index % 2 == 1 and action_day_dict.get('action') == 'Sell'):

@@ -6,9 +6,8 @@ Created on Thu Feb 28 20:28:51 2019
 @author: hrishekesh.shinde
 """
 from constraint import *
-import pandas as pd
-import numpy as np
 import pickle
+# read the predicted data from pickle files
 file_open = open('open_prediction', 'rb')
 y_pred_open = pickle.load(file_open)
 file_open.close()
@@ -60,18 +59,20 @@ stockCallProblem_daydiff.addVariable('action', ['Short Sell', 'Intraday Buy', 'N
 stockCallProblem_maxdiff.addVariable('action', ['Short Sell', 'Intraday Buy', 'No Action'])
 stockCallProblem_mindiff.addVariable('action', ['Short Sell', 'Intraday Buy', 'No Action'])
 
+# constraint for difference between close price and open price - for intraday buy
 def addProfitConstraint_daydiff(dayDiff, action):
     minDiffBuy = 0.135
     if action == 'Intraday Buy' and dayDiff > minDiffBuy:
         return True
     return False
-
+# constraint for difference between day high price and open price - for intraday buy
 def addProfitConstraint_maxdiff(maxDiff, action):
     minDiffBuy = 0.135
     if action == 'Intraday Buy' and maxDiff > minDiffBuy:
         return True
     return False
 
+# constraint for difference between open price and day low price - for short sell
 def addProfitConstraint_mindiff(minDiff, action):
     minDiffBuy = -0.135
     if action == 'Short Sell' and minDiff < minDiffBuy:
