@@ -61,20 +61,20 @@ stockCallProblem_mindiff.addVariable('action', ['Short Sell', 'Intraday Buy', 'N
 
 # constraint for difference between close price and open price - for intraday buy
 def addProfitConstraint_daydiff(dayDiff, action):
-    minDiffBuy = 0.135
+    minDiffBuy = 0.16
     if action == 'Intraday Buy' and dayDiff > minDiffBuy:
         return True
     return False
 # constraint for difference between day high price and open price - for intraday buy
 def addProfitConstraint_maxdiff(maxDiff, action):
-    minDiffBuy = 0.135
+    minDiffBuy = 0.16
     if action == 'Intraday Buy' and maxDiff > minDiffBuy:
         return True
     return False
 
 # constraint for difference between open price and day low price - for short sell
 def addProfitConstraint_mindiff(minDiff, action):
-    minDiffBuy = -0.135
+    minDiffBuy = -0.16
     if action == 'Short Sell' and minDiff < minDiffBuy:
         return True
 
@@ -91,6 +91,7 @@ calls = []
 calls.extend(calls_daydiff)
 calls.extend(calls_maxdiff)
 calls.extend(calls_mindiff)
+calls.reverse()
 
 intraday_profit = 0
 print('The recommendations for intraday trades are as below:')

@@ -27,7 +27,7 @@ num_batch_size = 32
 # Split data into training and testing sets
 test_data_size = 60
 train_data_size = dailyHistoricalData.shape[0]-test_data_size
-testing_data = dailyHistoricalData.tail(2*num_steps)
+testing_data = dailyHistoricalData.tail(3*num_steps)
 training_data = dailyHistoricalData.head(train_data_size)
 
 # get only the stock open values for all rows and open column which is the second column in dataset
@@ -113,29 +113,30 @@ y_test_low = []
 
 # RNN needs a sequential data structure with num_steps which gives a single output
 for i in range(num_steps, train_data_size):
-    X_train_open.append(scaled_training_data_open[i-num_steps:i, 0])
-    y_train_open.append(scaled_training_data_open[i, 0])
-    X_train_volume.append(scaled_training_data_volume[i-num_steps:i, 0])
-    y_train_volume.append(scaled_training_data_volume[i, 0])
-    X_train_close.append(scaled_training_data_close[i-num_steps:i, 0])
-    y_train_close.append(scaled_training_data_close[i, 0])
-    X_train_high.append(scaled_training_data_high[i-num_steps:i, 0])
-    y_train_high.append(scaled_training_data_high[i, 0])
-    X_train_low.append(scaled_training_data_low[i-num_steps:i, 0])
-    y_train_low.append(scaled_training_data_low[i, 0])
+    if i+num_steps < training_data.shape[0]:
+        X_train_open.append(scaled_training_data_open[i-num_steps:i, 0])
+        y_train_open.append(scaled_training_data_open[i-num_steps, 0])
+        X_train_volume.append(scaled_training_data_volume[i-num_steps:i, 0])
+        y_train_volume.append(scaled_training_data_volume[i-num_steps, 0])
+        X_train_close.append(scaled_training_data_close[i-num_steps:i, 0])
+        y_train_close.append(scaled_training_data_close[i-num_steps, 0])
+        X_train_high.append(scaled_training_data_high[i-num_steps:i, 0])
+        y_train_high.append(scaled_training_data_high[i-num_steps, 0])
+        X_train_low.append(scaled_training_data_low[i-num_steps:i, 0])
+        y_train_low.append(scaled_training_data_low[i-num_steps, 0])
     
 # Create sequential test data
 for i in range(num_steps, num_steps+test_data_size):
     X_test_open.append(scaled_testing_data_open[i-num_steps:i, 0])
-    y_test_open.append(scaled_testing_data_open[i-1, 0])
+    y_test_open.append(scaled_testing_data_open[i-num_steps, 0])
     X_test_volume.append(scaled_testing_data_volume[i-num_steps:i, 0])
-    y_test_volume.append(scaled_testing_data_volume[i-1, 0])
+    y_test_volume.append(scaled_testing_data_volume[i-num_steps, 0])
     X_test_close.append(scaled_testing_data_close[i-num_steps:i, 0])
-    y_test_close.append(scaled_testing_data_close[i-1, 0])
+    y_test_close.append(scaled_testing_data_close[i-num_steps, 0])
     X_test_high.append(scaled_testing_data_high[i-num_steps:i, 0])
-    y_test_high.append(scaled_testing_data_high[i-1, 0])
+    y_test_high.append(scaled_testing_data_high[i-num_steps, 0])
     X_test_low.append(scaled_testing_data_low[i-num_steps:i, 0])
-    y_test_low.append(scaled_testing_data_low[i-1, 0])
+    y_test_low.append(scaled_testing_data_low[i-num_steps, 0])
     
 # convert to numpy array and reshape for open data
 X_train_open, y_train_open = np.array(X_train_open), np.array(y_train_open)
@@ -226,6 +227,7 @@ predictor.fit(X_train, y_train, epochs=num_epochs, batch_size=num_batch_size)
 
 # make predictions
 predicted_stock_price = predictor.predict(X_test)
+
 y_test_open = featureScaler_open.inverse_transform(np.array(y_test[:, 0]).reshape(-1, 1))
 y_pred_open = featureScaler_open.inverse_transform(np.array(predicted_stock_price.tolist())[:, 0].reshape(-1, 1))
 

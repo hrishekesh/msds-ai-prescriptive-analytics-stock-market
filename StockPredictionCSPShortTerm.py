@@ -69,10 +69,16 @@ calls = sorted(calls, key = lambda k: k['day'])
 index = 1
 # Ensure that a buy call is followed by a sell call
 for action_day_dict in calls:
-    if (index % 2 == 0 and action_day_dict.get('action') == 'Buy') or \
-    (index % 2 == 1 and action_day_dict.get('action') == 'Sell'):
+    if (index % 2 == 0 and action_day_dict.get('action') == 'Buy'):
         calls.remove(action_day_dict)
-    index += 1
+        index -= 1
+    elif (index % 2 == 1 and action_day_dict.get('action') == 'Sell'):
+        calls.remove(action_day_dict)
+        index -= 1
+    else:
+        index += 1
+if calls[len(calls)-1].get('action') == 'Buy':
+    calls.remove(calls[len(calls)-1])
 
 short_term_profit = 0
 for call in calls:
