@@ -27,7 +27,7 @@ num_batch_size = 32
 # Split data into training and testing sets
 test_data_size = 60
 train_data_size = dailyHistoricalData.shape[0]-test_data_size
-testing_data = dailyHistoricalData.tail(3*num_steps)
+testing_data = dailyHistoricalData.tail(2*num_steps)
 training_data = dailyHistoricalData.head(train_data_size)
 
 # get only the stock open values for all rows and open column which is the second column in dataset
